@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-/* Module dependencies */
+
+/* MODULE DEPENDENCIES*/
 const socket = require('./socket');
 const app = require('./app');
 
+//BASE DE DATOS
 // const {connectionDB} = require('../database/mariadb.orm');
 // const {testConnection} = require('./src/database/mariadb');
 

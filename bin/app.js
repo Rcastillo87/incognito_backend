@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const routes = require('../routers/routes')
+const router = require('../routers/routes');
 const os = require('os');
 const cors = require('cors');
 const ifaces = os.networkInterfaces();
@@ -12,12 +12,12 @@ const auth = require('../routers/auth.route');
 // const port = normalizePort(process.env.PORT || '5000');
 // app.set('port', port);
 
-app.use(express.json());
 app.use(cors({origin: '*'}));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //Routers
-// app.use(routes)
+app.use('/', router);
 
 //Listening
 console.log(`🖥️  Iniciando servidor - levantando servicios...`);

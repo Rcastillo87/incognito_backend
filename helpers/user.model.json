@@ -1,0 +1,18 @@
+{
+    "id": "number|string",
+    "name": "string",
+    "nickname" : "string",
+    "user": "string",
+    "password": "bycript",
+    "profilePhoto": "string|url",
+    "token": "string",
+    "phone": "number",
+    "email": "string",
+    "status": {
+        "online" : "Boolean",
+        "event": {
+            "id": "number|string",
+            "name": "string"
+        }
+    }
+}

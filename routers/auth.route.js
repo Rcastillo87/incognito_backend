@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { register_validator } = require('../validators/auth.validator');
-const {checkAuth} = require('../middlewares/auth.middleware');
+const { registerUserValidator } = require('../validators/auth.validator');
+const {registerUser} = require('../controller/auth.controller');
+// const {checkAuth} = require('../middlewares/auth.middleware');
 
-// const {login, register, logout, userByToken} = require('../controllers/auth.controllers');
+router.get('/', (req, res, next)=>{
+    res.send('home auth routes')
+});
+
+router.post('/register/user', registerUserValidator, registerUser);
+
+router.get('/register/user', (req, res, next)=>{
+    res.send('auth/register/user')
+});
 
 // router.post('/login', login);
 // router.post('/logout', logout);
