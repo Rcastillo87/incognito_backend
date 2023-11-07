@@ -43,11 +43,13 @@ async function registerUser(req, res, next){
 
 async function login(data, callback, io) {
   const userRef = db.collection('users');
-  const snapshot = await userRef.where('nickname', '==', req.body.user).get();
 
-  if (snapshot.empty) {
-    res.send({successful: false, error: 'create:usernotfound'} );
-  }  
+  console.log(data);
+  // const snapshot = await userRef.where('nickname', '==', data.user).get();
+
+  // if (snapshot.empty) {
+  //   res.send({successful: false, error: 'create:usernotfound'} );
+  // }  
 
   // const arrar =[];
   // snapshot.forEach(doc => {
