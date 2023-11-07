@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+/* Module dependencies */
+const socket = require('./socket');
+const app = require('./app');
+
+// const {connectionDB} = require('../database/mariadb.orm');
+// const {testConnection} = require('./src/database/mariadb');
+
+new socket(app);
