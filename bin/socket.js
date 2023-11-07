@@ -1,6 +1,7 @@
 const http = require('http');
 const { Server } = require("socket.io");
-// const {login} = require('../controllers/auth.controllers');
+const {login} = require('../controller/auth.controller');
+const { getFirestore } = require('firebase-admin/firestore');
 
 class socket{
     constructor(app){
@@ -14,11 +15,13 @@ class socket{
 
         //WEBSOCKETS
         io.on('connection', (socket) => {
+            const db = getFirestore();
+
             console.log('Usuario conectado');
             // socket.on('disconnect', () => { let id = socket.user_data ? socket.user_data.user_id : ''; leave({user_id: id}, io)});
 
             //comandos
-            // socket.on('login', (data, callback)=> login(data, callback, io))
+            socket.on('login', (data, callback)=> login(data, callback, io))
         });
     }
 }

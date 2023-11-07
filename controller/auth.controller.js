@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const { validationResult } = require('express-validator');
 // const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
-
 const db = getFirestore();
 
 async function registerUser(req, res, next){
@@ -41,6 +40,52 @@ async function registerUser(req, res, next){
     res.send({ successful: false, error: e, message: e } )
   }
 }
+
+async function login(data, callback, io) {
+  const userRef = db.collection('users');
+  const snapshot = await userRef.where('nickname', '==', req.body.user).get();
+
+  if (snapshot.empty) {
+    res.send({successful: false, error: 'create:usernotfound'} );
+  }  
+
+  // const arrar =[];
+  // snapshot.forEach(doc => {
+  //     const data = doc.data();
+  //     data.id = doc.id
+  //     arrar.push(data);
+  // });
+
+  // const usuario = arrar[0];
+  
+  // new Promise(async function (myResolve, myReject) {
+  //     if (await bcrypt.compare(req.body.pass, usuario.pass)) {
+  //       res.send(
+  //             {
+  //                 successful: true, data: {
+  //                     token: jwt.sign(
+  //                         { name: usuario.nombre_completo, id: usuario.id },
+  //                         process.env.SAL,
+  //                         { expiresIn: "24h", }
+  //                     ),
+  //                     user:{
+  //                         id: usuario.id,
+  //                         nombre: usuario.nombre_completo,
+  //                         correo: usuario.email
+  //                     }
+  //                 }
+  //             }
+  //         )
+  //     }else {
+  //       res.send( { successful: false, error: "pass invalido" } )
+  //     }
+  // });
+}
+
+module.exports = {
+  login,
+  registerUser,
+};
 
 // async function create(req, res, next) {
 //   const citiesRef = db.collection('usuarios');
@@ -101,52 +146,3 @@ async function registerUser(req, res, next){
 //       res.send({ successful: false, error: error } );
 //     }
 // }
-
-// async function login(req, res, next) {
-//   const citiesRef = db.collection('usuarios');
-//   const snapshot = await citiesRef.where('email', '==', req.body.email).get();
-
-//   if (snapshot.empty) {
-//     res.send({ successful: false, error: 'No such document!' } );
-//   }  
-//   var arrar =[];
-//   snapshot.forEach(doc => {
-//       var  data = doc.data();
-//       data.id = doc.id
-//       arrar.push(data);
-//   });
-
-//   var usuario = arrar[0];
-//   //res.send(usuario)
-  
-//   new Promise(async function (myResolve, myReject) {
-//       if (await bcrypt.compare(req.body.pass, usuario.pass)) {
-//         res.send(
-//               {
-//                   successful: true, data: {
-//                       token: jwt.sign(
-//                           { name: usuario.nombre_completo, id: usuario.id },
-//                           process.env.SAL,
-//                           { expiresIn: "24h", }
-//                       ),
-//                       user:{
-//                           id: usuario.id,
-//                           nombre: usuario.nombre_completo,
-//                           correo: usuario.email
-//                       }
-//                   }
-//               }
-//           )
-//       }else {
-//         res.send( { successful: false, error: "pass invalido" } )
-//       }
-//   });
-// }
-
-module.exports = {
-  registerUser
-  // create,
-  // all,
-  // one_doc,
-  // login
-};

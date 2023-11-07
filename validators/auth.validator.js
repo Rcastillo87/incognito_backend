@@ -1,12 +1,5 @@
 const { body } = require('express-validator');
-const { initializeApp, cert} = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-const serviceAccount  = require("../helpers/firekey.json");
-
-//Database
-initializeApp({
-    credential: cert(serviceAccount)
-});
 
 const db = getFirestore();
 

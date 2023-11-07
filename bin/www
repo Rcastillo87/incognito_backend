@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
 /* MODULE DEPENDENCIES*/
+const { initializeApp, cert} = require('firebase-admin/app');
+const serviceAccount  = require("../helpers/firekey.json");
+
+initializeApp({
+    credential: cert(serviceAccount)
+});
+
 const socket = require('./socket');
 const app = require('./app');
 
