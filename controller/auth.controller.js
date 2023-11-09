@@ -5,22 +5,22 @@ const { validationResult } = require('express-validator');
 const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
 const db = getFirestore();
 
-async function registerUser(req, res, next){
+async function user_input(req, res, next){
   try {
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) { return res.status(422).json({successful: false, errors: errors.array() })}
 
-    const {name,nickname,password} = req.body;
+    var {name,nickname,password,phone,email,profilePhoto} = req.body;
     const salt = await bcrypt.genSalt(10);
     const pass = await bcrypt.hash(password, salt);    
 
     const userJson = {
       name,
-      phone: null,
-      email: null,
+      phone,
+      email,
       nickname,
-      profilePhoto: null,
+      profilePhoto,
       password: pass,
       status: {
         online: true,
@@ -33,7 +33,8 @@ async function registerUser(req, res, next){
       ),
     };
  
-    const saveUser = await db.collection("users").add(userJson);
+    await db.collection("users").add(userJson);
+    delete userJson.password;
     res.send({ successful: true, data: userJson } );
   } catch (error) {
     console.log(error)
@@ -42,9 +43,52 @@ async function registerUser(req, res, next){
 }
 
 async function login(data, callback, io) {
-  const userRef = db.collection('users');
 
-  console.log(data);
+
+  const citiesRef = db.collection('usuarios');
+  const snapshot = await citiesRef.where('user', '==', req.body.user).get();
+  if (snapshot.empty) {
+    res.send({ successful: false, error: 'No such document!' } );
+  }  
+  var arrar =[];
+  snapshot.forEach(doc => {
+      var  data = doc.data();
+      data.id = doc.id
+      arrar.push(data);
+  });
+  
+  
+    var usuario = arrar[0];
+    //res.send(usuario)
+    
+    new Promise(async function (myResolve, myReject) {
+        if (await bcrypt.compare(req.body.pass, usuario.pass)) {
+          res.send(
+                {
+                    successful: true, data: {
+                        token: jwt.sign(
+                            { name: usuario.nombre_completo, id: usuario.id },
+                            process.env.SAL,
+                            { expiresIn: "24h", }
+                        ),
+                        user:{
+                            id: usuario.id,
+                            nombre: usuario.nombre_completo,
+                            correo: usuario.email
+                        }
+                    }
+                }
+            )
+        }else {
+          res.send( { successful: false, error: "pass invalido" } )
+        }
+    })
+
+
+
+  //const userRef = db.collection('users');
+
+  //console.log(data);
   // const snapshot = await userRef.where('nickname', '==', data.user).get();
 
   // if (snapshot.empty) {
@@ -86,7 +130,7 @@ async function login(data, callback, io) {
 
 module.exports = {
   login,
-  registerUser,
+  user_input
 };
 
 // async function create(req, res, next) {
