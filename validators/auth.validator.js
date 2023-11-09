@@ -33,4 +33,22 @@ const user_input = [
      })
 ];
 
-module.exports = {user_input}
+const user_login = [
+    body('password').isLength({ min: 8 }).notEmpty(),
+    body('email', 'Invalid email').custom(async (value) => {
+        try{
+            const userModel = db.collection('users');
+            const user = await userModel.where('email', '==', value).get();
+            if (!user.empty) {
+                throw new Error('¡Este email ya está en uso!');
+            }
+        } catch(e){
+            throw new Error(e ?? 'Internal Server Error');
+        }
+     })
+];
+
+module.exports = {
+    user_input,
+    user_login
+}
