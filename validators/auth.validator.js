@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
-const { getFirestore, Timestamp, FieldValue, Filter } = require('firebase-admin/firestore');
-const db = getFirestore();
+const db = require('../helpers/confi_fire');
+
 
 const user_input = [
     body('name').notEmpty(),
@@ -39,7 +39,7 @@ const user_login = [
         try{
             const userModel = db.collection('users');
             const user = await userModel.where('email', '==', value).get();
-            if (!user.empty) {
+            if (user.empty) {
                 throw new Error('¡Este email ya está en uso!');
             }
         } catch(e){

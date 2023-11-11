@@ -1,7 +1,7 @@
 const http = require('http');
 const { Server } = require("socket.io");
 const {login} = require('../controller/auth.controller');
-const { getFirestore } = require('firebase-admin/firestore');
+//const { getFirestore } = require('firebase-admin/firestore');
 
 class socket{
     constructor(app){
