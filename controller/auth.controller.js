@@ -14,11 +14,11 @@ async function user_input(req, res, next){
     const pass = await bcrypt.hash(password, salt);    
 
     const userJson = {
-      name,
-      phone,
-      email,
-      nickname,
-      profilePhoto,
+      name:name,
+      phone: phone,
+      email: email,
+      nickname: nickname,
+      profilePhoto: profilePhoto,
       password: pass,
       status: {
         online: true,
@@ -40,21 +40,51 @@ async function user_input(req, res, next){
   }
 }
 
-async function login(data, callback, io) {
+/*async function login(data, res){
+  const errors = validationResult(data);
+  if (!errors.isEmpty()) { return res.status(422).json({successful: false, errors: errors.array() })}
+  res.send( sokect_login(data) );
+}*/
+
+async function login(data, res) {
+
   const { password, email } = data.body;
 
-    // Sign in with email and pass.
-    db.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode === 'auth/wrong-password') {
-            alert('Wrong password.');
-        } else {
-            alert(errorMessage);
-        }
-        console.log(error);
+  const query = db.collection("users").where("email", "==", email);
+  query.get()
+  .then(snapshot => {
+    //const usuarios = [];
+    var user = null;
+    snapshot.forEach(doc => {
+      const usuario = doc.data();
+      //delete usuario.password;
+      //delete usuario.token;
+      user = usuario;
+      //usuarios.push(usuario);
     });
+
+    new Promise(async (_myResolve, myReject) => {
+      if (await bcrypt.compare(password, user.password)) {
+        delete user.password;
+        res.send(
+          {
+            successful: true, data: jwt.sign(
+              { nickname: user.nickname, email: user.email },
+              process.env.SAL,
+              { expiresIn: "24h" }
+            )
+          }
+        );
+      } else {
+        res.send({ successful: false, error: "pass invalido" });
+      }
+    })
+
+  })
+  .catch(error => {
+    return res.status(422).json({successful: false, errors: error })
+  });
+
 }
 
 

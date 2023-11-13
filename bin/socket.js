@@ -21,7 +21,7 @@ class socket{
             // socket.on('disconnect', () => { let id = socket.user_data ? socket.user_data.user_id : ''; leave({user_id: id}, io)});
 
             //comandos
-            socket.on('login', (data, callback)=> login(data, callback, io))
+            socket.on('login', (data, callback)=> sokect_login(data, callback, io))
         });
     }
 }
