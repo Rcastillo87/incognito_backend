@@ -21,7 +21,17 @@ const eventos_input = [
     body('organizer_phone').notEmpty()
 ];
 const eventos_update = [
-    body('id').notEmpty(),
+    body('id').custom(async (id, { }) => {
+        return new Promise(async (resolve, reject) => {
+            const eventosModel = await db.collection('eventos').doc(id).get();
+            if (!eventosModel.exists) {
+                reject(new Error('Documento no encontrado.'))
+            } else {
+                resolve(true)
+                console.log(eventosModel.data());
+            }
+        })
+    }),
     body('name').notEmpty(),
     body('city').notEmpty(),
     body('department').notEmpty(),

@@ -36,7 +36,46 @@ async function user_input(req, res, next){
     res.send({ successful: true, data: userJson } );
   } catch (error) {
     console.log(error)
-    res.send({ successful: false, error: e, message: e } )
+    res.send({ successful: false, message: error } )
+  }
+}
+
+async function user_update(req, res, next){
+  try {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) { return res.status(422).json({successful: false, errors: errors.array() })}
+
+    const {name,nickname,password,phone,email,profilePhoto,id} = req.body;
+
+    var userJson = {
+      name:name,
+      phone: phone,
+      email: email,
+      nickname: nickname,
+      profilePhoto: profilePhoto,
+      password: null,
+      status: {
+        online: true,
+        event : {},
+      }
+    };
+
+    var pass = null;
+    if( password !== '' ){
+      const salt = await bcrypt.genSalt(10);
+      pass = await bcrypt.hash(password, salt);
+      userJson.password = pass;
+    }else{
+      delete userJson.password;
+    }
+
+    await db.collection('users').doc(id).set(userJson, { merge: true });
+    delete userJson.password;
+    res.send({ successful: true, data: userJson } );
+  } catch (error) {
+    console.log(error)
+    res.send({ successful: false, message: error } )
   }
 }
 
@@ -87,8 +126,27 @@ async function login(data, res) {
 
 }
 
+async function user_uno(req, res, next){
+
+  try {
+    const eventosModel = await db.collection('users').doc(req.body.id).get();
+    if (!eventosModel.exists) {
+        res.send({ successful: false, data: "Documento no encontrado" } );
+    } else {        var lista = eventosModel.data();
+        delete lista.password;
+        delete lista.token;
+        res.send({ successful: true, data: lista } );
+    }
+  } catch(error) {
+    res.send({ successful: false, error: error } );
+  }
+
+}
+
 
 module.exports = {
   login,
-  user_input
+  user_input,
+  user_uno,
+  user_update
 };

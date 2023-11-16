@@ -52,7 +52,7 @@ async function eventos_update(req, res, next){
       }
     };
 
-    await db.database().ref(`eventos/${id}`).set(eventosJson);
+    await db.collection('eventos').doc(id).set(eventosJson, { merge: true });
     res.send({ successful: true, data: eventosJson } );
   } catch (error) {
     console.log(error)
@@ -62,15 +62,34 @@ async function eventos_update(req, res, next){
 
 async function lista_department(req, res, next){
   fs.readFile(__dirname + "/../helpers/lista_dpt_y_ciudades.json", 'utf8', function (err, data) {
-    res.set({ 'content-type': 'application/json; charset=utf-8' });
-    res.end( data );
-});
-
+      res.set({ 'content-type': 'application/json; charset=utf-8' });
+      res.end( data );
+  });
 }
 
+async function lista_evento_tipos(req, res, next){
+
+  try {
+    const tipos = db.collection('evento_tipos');
+    const snapshot = await tipos.get();
+
+    var arrar =[];
+    snapshot.forEach(doc => {
+        var  data = doc.data();
+        data.id = doc.id
+        arrar.push(data);
+    });
+    res.send({ successful: true, data: arrar } );
+
+  } catch(error) {
+    res.send({ successful: false, error: error } );
+  }
+
+}
 
 module.exports = {
   eventos_input,
   lista_department,
-  eventos_update
+  eventos_update,
+  lista_evento_tipos
 };

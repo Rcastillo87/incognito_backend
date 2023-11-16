@@ -31,6 +31,25 @@ const user_input = [
      })
 ];
 
+const user_update = [
+    body('id').custom(async (id, { }) => {
+        return new Promise(async (resolve, reject) => {
+            const eventosModel = await db.collection('users').doc(id).get();
+            if (!eventosModel.exists) {
+                reject(new Error('Documento no encontrado.'))
+            } else {
+                resolve(true)
+                console.log(eventosModel.data());
+            }
+        })
+    }),
+    body('name').notEmpty(),
+    body('nickname').notEmpty(),
+    body('profilePhoto').isEmpty(),
+    body('phone').isInt(),
+    body('email').isEmail().withMessage('Solo se admiten correos')
+];
+
 const user_login = [
     body('password').isLength({ min: 8 }).notEmpty(),
     body('email', 'Invalid email').custom(async (value) => {
@@ -48,5 +67,6 @@ const user_login = [
 
 module.exports = {
     user_input,
-    user_login
+    user_login,
+    user_update
 }
