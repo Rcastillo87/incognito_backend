@@ -10,4 +10,6 @@ router.put('/update', auth, Validator.eventos_update, eventos.eventos_update);
 router.get('/lista_department', eventos.lista_department);
 router.get('/lista_evento_tipos', eventos.lista_evento_tipos);
 
+router.get('/ingreso_evento', Validator.ingreso_evento, eventos.ingreso_evento);
+
 module.exports = router;

@@ -1,5 +1,5 @@
-const { body } = require('express-validator');
-const db = require('../helpers/confi_fire');
+const { body, check } = require('express-validator');
+const { db, admin } = require('../helpers/confi_fire');
 
 const eventos_input = [
     body('name').notEmpty().custom(async (value, { }) => {
@@ -40,9 +40,21 @@ const eventos_update = [
     body('organizer_name').notEmpty(),
     body('organizer_phone').notEmpty()
 ];
-
+const ingreso_evento = [
+    check('id').custom(async (id, { }) => {
+        return new Promise(async (resolve, reject) => {
+            const eventosModel = await db.collection('eventos').doc(id).get();
+            if (!eventosModel.exists) {
+                reject(new Error('Documento no encontrado.'))
+            } else {
+                resolve(true)
+            }
+        })
+    })
+];
 
 module.exports = {
     eventos_input,
-    eventos_update
+    eventos_update,
+    ingreso_evento
 }

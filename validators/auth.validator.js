@@ -1,5 +1,5 @@
 const { body } = require('express-validator');
-const db = require('../helpers/confi_fire');
+const { db, admin } = require('../helpers/confi_fire');
 
 const user_input = [
     body('name').notEmpty(),

@@ -1,6 +1,9 @@
 const { validationResult } = require('express-validator');
-const db = require('../helpers/confi_fire');
+const { db, admin } = require('../helpers/confi_fire');
 var fs = require("fs");
+const auth = require('../helpers/auth.helpers');
+const jwt = require("jsonwebtoken");
+
 
 async function eventos_input(req, res, next){
   try {
@@ -87,9 +90,44 @@ async function lista_evento_tipos(req, res, next){
 
 }
 
+async function ingreso_evento(req, res, next){
+
+try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) { return res.status(422).json({successful: false, errors: errors.array() })}
+
+    const { id } = req.query;
+    const token = req.headers.authorization ? req.headers.authorization.split(' ').pop() : null;
+
+    if(token){
+      var dat= new Date(); //Obtienes la fecha
+      var dat2 = Date.parse(dat); //Lo parseas para transformarlo
+      const decoded = jwt.verify(token, process.env.SAL);
+      const ingreso_evento = {
+        correo: decoded.email,
+        id_evento: id,
+        fecha_actual: dat2
+      };
+      await db.collection("eventos_asistencia").add(ingreso_evento);
+    }
+
+    const userRef = db.collection('eventos').doc(id);
+    const increment = admin.firestore.FieldValue.increment(1);
+    userRef.update({ cantpeople: increment });
+
+    res.send({ successful: true, data: "ID valido" } );
+
+  } catch (error) {
+    console.log(error)
+    res.send({ successful: false, error: error } )
+  }
+
+}
+
 module.exports = {
   eventos_input,
   lista_department,
   eventos_update,
-  lista_evento_tipos
+  lista_evento_tipos,
+  ingreso_evento
 };

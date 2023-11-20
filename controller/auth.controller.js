@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const { validationResult } = require('express-validator');
-const db = require('../helpers/confi_fire');
+const { db, admin } = require('../helpers/confi_fire');
 
 async function user_input(req, res, next){
   try {
@@ -108,7 +108,7 @@ async function login(data, res) {
         res.send(
           {
             successful: true, data: jwt.sign(
-              { nickname: user.nickname, email: user.email },
+              { id: user.nickname, nickname: user.nickname, email: user.email },
               process.env.SAL,
               { expiresIn: "24h" }
             )
